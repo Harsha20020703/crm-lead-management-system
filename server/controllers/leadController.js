@@ -14,7 +14,36 @@ const createLead = async (req, res) => {
 
 const getLeads = async (req, res) => {
   try {
-    const leads = await Lead.find();
+    const search = req.query.search || "";
+
+    const status = req.query.status || "";
+
+    let query = {};
+
+    if (search) {
+      query.$or = [
+        {
+          leadName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          companyName: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    const leads = await Lead.find(query).sort({
+      createdAt: -1,
+    });
 
     res.json(leads);
   } catch (error) {
@@ -52,6 +81,12 @@ const updateLead = async (req, res) => {
       }
     );
 
+    if (!updatedLead) {
+      return res.status(404).json({
+        message: "Lead not found",
+      });
+    }
+
     res.json(updatedLead);
   } catch (error) {
     res.status(500).json({
@@ -62,7 +97,13 @@ const updateLead = async (req, res) => {
 
 const deleteLead = async (req, res) => {
   try {
-    await Lead.findByIdAndDelete(req.params.id);
+    const deletedLead = await Lead.findByIdAndDelete(req.params.id);
+
+    if (!deletedLead) {
+      return res.status(404).json({
+        message: "Lead not found",
+      });
+    }
 
     res.json({
       message: "Lead deleted",

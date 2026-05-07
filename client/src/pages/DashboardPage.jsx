@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import API from "../services/api";
 import LeadsTable from "../components/LeadsTable";
 
 function DashboardPage() {
   const [stats, setStats] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardStats();
@@ -25,6 +29,12 @@ function DashboardPage() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+
+    navigate("/");
+  };
+
   return (
     <div
       style={{
@@ -32,7 +42,25 @@ function DashboardPage() {
         fontFamily: "Arial",
       }}
     >
-      <h1>CRM Dashboard</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>CRM Dashboard</h1>
+
+        <button
+          onClick={handleLogout}
+          style={{
+            padding: "10px 20px",
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+      </div>
 
       {!stats ? (
         <p>Loading dashboard...</p>

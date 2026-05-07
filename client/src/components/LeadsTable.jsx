@@ -4,20 +4,25 @@ import CreateLeadForm from "./CreateLeadForm";
 
 function LeadsTable() {
   const [leads, setLeads] = useState([]);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     fetchLeads();
-  }, []);
+  }, [search, status]);
 
   const fetchLeads = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await API.get("/leads", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await API.get(
+        `/leads?search=${search}&status=${status}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setLeads(response.data);
     } catch (error) {
@@ -32,6 +37,41 @@ function LeadsTable() {
       <h2 style={{ marginTop: "40px" }}>
         Leads Management
       </h2>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginTop: "20px",
+          marginBottom: "20px",
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Search leads..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+            padding: "10px",
+            width: "300px",
+          }}
+        />
+
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          style={{
+            padding: "10px",
+          }}
+        >
+          <option value="">All Status</option>
+          <option value="New">New</option>
+          <option value="Contacted">Contacted</option>
+          <option value="Qualified">Qualified</option>
+          <option value="Won">Won</option>
+          <option value="Lost">Lost</option>
+        </select>
+      </div>
 
       <table
         border="1"

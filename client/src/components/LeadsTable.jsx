@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import CreateLeadForm from "./CreateLeadForm";
 
 function LeadsTable() {
   const [leads, setLeads] = useState([]);
@@ -26,7 +27,11 @@ function LeadsTable() {
 
   return (
     <div style={{ marginTop: "40px" }}>
-      <h2>Leads Management</h2>
+      <CreateLeadForm onLeadCreated={fetchLeads} />
+
+      <h2 style={{ marginTop: "40px" }}>
+        Leads Management
+      </h2>
 
       <table
         border="1"

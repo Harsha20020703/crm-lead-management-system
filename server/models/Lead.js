@@ -17,31 +17,14 @@ const leadSchema = new mongoose.Schema(
       required: true,
     },
 
-    phoneNumber: {
-      type: String,
-      required: true,
-    },
-
-    leadSource: {
-      type: String,
-      required: true,
-    },
-
-    assignedSalesperson: {
+    phone: {
       type: String,
       required: true,
     },
 
     status: {
       type: String,
-      enum: [
-        "New",
-        "Contacted",
-        "Qualified",
-        "Proposal Sent",
-        "Won",
-        "Lost",
-      ],
+      enum: ["New", "Contacted", "Qualified", "Won", "Lost"],
       default: "New",
     },
 
@@ -55,6 +38,4 @@ const leadSchema = new mongoose.Schema(
   }
 );
 
-const Lead = mongoose.model("Lead", leadSchema);
-
-module.exports = Lead;
+module.exports = mongoose.model("Lead", leadSchema);

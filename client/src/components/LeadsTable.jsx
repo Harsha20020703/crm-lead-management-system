@@ -4,7 +4,9 @@ import CreateLeadForm from "./CreateLeadForm";
 
 function LeadsTable() {
   const [leads, setLeads] = useState([]);
+
   const [search, setSearch] = useState("");
+
   const [status, setStatus] = useState("");
 
   useEffect(() => {
@@ -25,6 +27,48 @@ function LeadsTable() {
       );
 
       setLeads(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await API.delete(`/leads/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Lead deleted successfully");
+
+      fetchLeads();
+    } catch (error) {
+      console.log(error);
+
+      alert("Failed to delete lead");
+    }
+  };
+
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await API.put(
+        `/leads/${id}`,
+        {
+          status: newStatus,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      fetchLeads();
     } catch (error) {
       console.log(error);
     }
@@ -91,6 +135,7 @@ function LeadsTable() {
             <th>Email</th>
             <th>Phone</th>
             <th>Deal Value</th>
+            <th>Actions</th>
           </tr>
         </thead>
 
@@ -98,11 +143,49 @@ function LeadsTable() {
           {leads.map((lead) => (
             <tr key={lead._id}>
               <td>{lead.leadName}</td>
+
               <td>{lead.companyName}</td>
-              <td>{lead.status}</td>
+
+              <td>
+                <select
+                  value={lead.status}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      lead._id,
+                      e.target.value
+                    )
+                  }
+                >
+                  <option value="New">New</option>
+                  <option value="Contacted">Contacted</option>
+                  <option value="Qualified">Qualified</option>
+                  <option value="Won">Won</option>
+                  <option value="Lost">Lost</option>
+                </select>
+              </td>
+
               <td>{lead.email}</td>
+
               <td>{lead.phone}</td>
+
               <td>${lead.estimatedDealValue}</td>
+
+              <td>
+                <button
+                  onClick={() =>
+                    handleDelete(lead._id)
+                  }
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 12px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import LeadsTable from "../components/LeadsTable";
 
 function DashboardPage() {
   const [stats, setStats] = useState(null);
@@ -36,44 +37,48 @@ function DashboardPage() {
       {!stats ? (
         <p>Loading dashboard...</p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "20px",
-            marginTop: "30px",
-          }}
-        >
-          <div style={cardStyle}>
-            <h2>Total Leads</h2>
-            <p>{stats.totalLeads}</p>
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "20px",
+              marginTop: "30px",
+            }}
+          >
+            <div style={cardStyle}>
+              <h2>Total Leads</h2>
+              <p>{stats.totalLeads}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h2>New Leads</h2>
+              <p>{stats.newLeads}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h2>Qualified Leads</h2>
+              <p>{stats.qualifiedLeads}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h2>Won Leads</h2>
+              <p>{stats.wonLeads}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h2>Lost Leads</h2>
+              <p>{stats.lostLeads}</p>
+            </div>
+
+            <div style={cardStyle}>
+              <h2>Total Deal Value</h2>
+              <p>${stats.totalDealValue}</p>
+            </div>
           </div>
 
-          <div style={cardStyle}>
-            <h2>New Leads</h2>
-            <p>{stats.newLeads}</p>
-          </div>
-
-          <div style={cardStyle}>
-            <h2>Qualified Leads</h2>
-            <p>{stats.qualifiedLeads}</p>
-          </div>
-
-          <div style={cardStyle}>
-            <h2>Won Leads</h2>
-            <p>{stats.wonLeads}</p>
-          </div>
-
-          <div style={cardStyle}>
-            <h2>Lost Leads</h2>
-            <p>{stats.lostLeads}</p>
-          </div>
-
-          <div style={cardStyle}>
-            <h2>Total Deal Value</h2>
-            <p>${stats.totalDealValue}</p>
-          </div>
-        </div>
+          <LeadsTable />
+        </>
       )}
     </div>
   );

@@ -1,24 +1,36 @@
 import { useState } from "react";
 import API from "../services/api";
 
-function CreateLeadForm({ onLeadCreated }) {
-  const [message, setMessage] = useState("");
+function CreateLeadForm({
+  onLeadCreated,
+}) {
+  const [message, setMessage] =
+    useState("");
 
-  const [formData, setFormData] = useState({
-    leadName: "",
-    companyName: "",
-    email: "",
-    phone: "",
-    leadSource: "",
-    assignedSalesperson: "",
-    status: "New",
-    estimatedDealValue: "",
-  });
+  const salespersons = [
+    "John",
+    "David",
+    "Sarah",
+    "Michael",
+  ];
+
+  const [formData, setFormData] =
+    useState({
+      leadName: "",
+      companyName: "",
+      email: "",
+      phone: "",
+      leadSource: "",
+      assignedSalesperson: "",
+      status: "New",
+      estimatedDealValue: "",
+    });
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
   };
 
@@ -26,15 +38,22 @@ function CreateLeadForm({ onLeadCreated }) {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
-      await API.post("/leads", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await API.post(
+        "/leads",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      setMessage("Lead created successfully");
+      setMessage(
+        "Lead created successfully"
+      );
 
       setTimeout(() => {
         setMessage("");
@@ -55,7 +74,9 @@ function CreateLeadForm({ onLeadCreated }) {
     } catch (error) {
       console.log(error);
 
-      setMessage("Failed to create lead");
+      setMessage(
+        "Failed to create lead"
+      );
 
       setTimeout(() => {
         setMessage("");
@@ -64,14 +85,42 @@ function CreateLeadForm({ onLeadCreated }) {
   };
 
   return (
-    <div>
-      <h2
+    <div
+      style={{
+        backgroundColor: "white",
+        borderRadius: "20px",
+        padding: "35px",
+        boxShadow:
+          "0 6px 18px rgba(0,0,0,0.05)",
+      }}
+    >
+      <div
         style={{
-          marginBottom: "20px",
+          marginBottom: "30px",
         }}
       >
-        Create New Lead
-      </h2>
+        <h2
+          style={{
+            margin: 0,
+            fontSize: "32px",
+            color: "#0f172a",
+            fontWeight: "700",
+          }}
+        >
+          Create New Lead
+        </h2>
+
+        <p
+          style={{
+            marginTop: "10px",
+            color: "#64748b",
+            fontSize: "15px",
+          }}
+        >
+          Add and manage new sales
+          opportunities
+        </p>
+      </div>
 
       {message && (
         <div
@@ -82,10 +131,10 @@ function CreateLeadForm({ onLeadCreated }) {
                 ? "#16a34a"
                 : "#ef4444",
             color: "white",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "20px",
-            fontWeight: "bold",
+            padding: "14px",
+            borderRadius: "10px",
+            marginBottom: "25px",
+            fontWeight: "600",
           }}
         >
           {message}
@@ -97,8 +146,8 @@ function CreateLeadForm({ onLeadCreated }) {
           style={{
             display: "grid",
             gridTemplateColumns:
-              "repeat(auto-fit, minmax(250px, 1fr))",
-            gap: "15px",
+              "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "20px",
           }}
         >
           <input
@@ -124,7 +173,7 @@ function CreateLeadForm({ onLeadCreated }) {
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Email Address"
             value={formData.email}
             onChange={handleChange}
             required
@@ -141,27 +190,58 @@ function CreateLeadForm({ onLeadCreated }) {
             style={inputStyle}
           />
 
-          <input
-            type="text"
+          <select
             name="leadSource"
-            placeholder="Lead Source"
             value={formData.leadSource}
             onChange={handleChange}
             required
             style={inputStyle}
-          />
+          >
+            <option value="">
+              Select Lead Source
+            </option>
 
-          <input
-            type="text"
+            <option value="Website">
+              Website
+            </option>
+
+            <option value="Facebook">
+              Facebook
+            </option>
+
+            <option value="LinkedIn">
+              LinkedIn
+            </option>
+
+            <option value="Referral">
+              Referral
+            </option>
+          </select>
+
+          <select
             name="assignedSalesperson"
-            placeholder="Assigned Salesperson"
             value={
               formData.assignedSalesperson
             }
             onChange={handleChange}
             required
             style={inputStyle}
-          />
+          >
+            <option value="">
+              Select Salesperson
+            </option>
+
+            {salespersons.map(
+              (person) => (
+                <option
+                  key={person}
+                  value={person}
+                >
+                  {person}
+                </option>
+              )
+            )}
+          </select>
 
           <select
             name="status"
@@ -169,7 +249,9 @@ function CreateLeadForm({ onLeadCreated }) {
             onChange={handleChange}
             style={inputStyle}
           >
-            <option value="New">New</option>
+            <option value="New">
+              New
+            </option>
 
             <option value="Contacted">
               Contacted
@@ -183,9 +265,13 @@ function CreateLeadForm({ onLeadCreated }) {
               Proposal Sent
             </option>
 
-            <option value="Won">Won</option>
+            <option value="Won">
+              Won
+            </option>
 
-            <option value="Lost">Lost</option>
+            <option value="Lost">
+              Lost
+            </option>
           </select>
 
           <input
@@ -204,15 +290,19 @@ function CreateLeadForm({ onLeadCreated }) {
         <button
           type="submit"
           style={{
-            marginTop: "20px",
-            backgroundColor: "#2563eb",
+            marginTop: "30px",
+            backgroundColor:
+              "#2563eb",
             color: "white",
             border: "none",
-            padding: "14px 24px",
-            borderRadius: "8px",
+            padding: "16px 30px",
+            borderRadius: "12px",
             cursor: "pointer",
-            fontWeight: "bold",
-            fontSize: "15px",
+            fontWeight: "600",
+            fontSize: "16px",
+            transition: "0.2s ease",
+            boxShadow:
+              "0 4px 12px rgba(37,99,235,0.2)",
           }}
         >
           Create Lead
@@ -223,10 +313,13 @@ function CreateLeadForm({ onLeadCreated }) {
 }
 
 const inputStyle = {
-  padding: "14px",
-  borderRadius: "8px",
-  border: "1px solid #cbd5e1",
-  fontSize: "14px",
+  padding: "16px",
+  borderRadius: "12px",
+  border: "1px solid #dbeafe",
+  fontSize: "15px",
+  backgroundColor: "#f8fafc",
+  outline: "none",
+  color: "#0f172a",
 };
 
 export default CreateLeadForm;

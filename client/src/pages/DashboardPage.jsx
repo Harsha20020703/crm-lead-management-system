@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 import API from "../services/api";
 import LeadsTable from "../components/LeadsTable";
 
@@ -19,11 +17,14 @@ function DashboardPage() {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await API.get("/dashboard", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await API.get(
+        "/dashboard",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setStats(response.data);
     } catch (error) {
@@ -41,121 +42,173 @@ function DashboardPage() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundColor: "#f5f7fb",
-        padding: "30px",
+        backgroundColor: "#f8fafc",
+        padding: "40px 20px",
         fontFamily: "Arial",
       }}
     >
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
+          maxWidth: "1400px",
+          margin: "0 auto",
         }}
       >
-        <div>
-          <h1
+        {/* HEADER */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+            alignItems: "center",
+            marginBottom: "40px",
+            flexWrap: "wrap",
+            gap: "20px",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                margin: 0,
+                color: "#0f172a",
+                fontSize: "38px",
+                fontWeight: "700",
+              }}
+            >
+              CRM Dashboard
+            </h1>
+
+            <p
+              style={{
+                color: "#64748b",
+                marginTop: "8px",
+                fontSize: "16px",
+              }}
+            >
+              Lead Management System
+            </p>
+          </div>
+
+          <button
+            onClick={handleLogout}
             style={{
-              margin: 0,
-              color: "#1e293b",
+              padding: "14px 24px",
+              border: "none",
+              backgroundColor:
+                "#ef4444",
+              color: "white",
+              borderRadius: "12px",
+              cursor: "pointer",
+              fontWeight: "600",
+              fontSize: "15px",
+              transition: "0.2s",
+              boxShadow:
+                "0 4px 10px rgba(239,68,68,0.2)",
             }}
           >
-            CRM Dashboard
-          </h1>
+            Logout
+          </button>
+        </div>
 
-          <p
+        {/* DASHBOARD CARDS */}
+        {!stats ? (
+          <div
             style={{
+              textAlign: "center",
+              padding: "60px",
+              fontSize: "18px",
               color: "#64748b",
             }}
           >
-            Lead Management System
-          </p>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          style={{
-            padding: "12px 20px",
-            border: "none",
-            backgroundColor: "#ef4444",
-            color: "white",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "bold",
-          }}
-        >
-          Logout
-        </button>
-      </div>
-
-      {!stats ? (
-        <p>Loading dashboard...</p>
-      ) : (
-        <>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "20px",
-            }}
-          >
-            <DashboardCard
-              title="Total Leads"
-              value={stats.totalLeads}
-            />
-
-            <DashboardCard
-              title="New Leads"
-              value={stats.newLeads}
-            />
-
-            <DashboardCard
-              title="Qualified Leads"
-              value={stats.qualifiedLeads}
-            />
-
-            <DashboardCard
-              title="Won Leads"
-              value={stats.wonLeads}
-            />
-
-            <DashboardCard
-              title="Lost Leads"
-              value={stats.lostLeads}
-            />
-
-            <DashboardCard
-              title="Total Deal Value"
-              value={`$${stats.totalDealValue}`}
-            />
+            Loading Dashboard...
           </div>
+        ) : (
+          <>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: "24px",
+                marginBottom: "40px",
+              }}
+            >
+              <DashboardCard
+                title=" Total Leads"
+                value={stats.totalLeads}
+                borderColor="#2563eb"
+              />
 
-          <LeadsTable />
-        </>
-      )}
+              <DashboardCard
+                title=" New Leads"
+                value={stats.newLeads}
+                borderColor="#0ea5e9"
+              />
 
+              <DashboardCard
+                title=" Qualified Leads"
+                value={
+                  stats.qualifiedLeads
+                }
+                borderColor="#9333ea"
+              />
 
+              <DashboardCard
+                title=" Won Leads"
+                value={stats.wonLeads}
+                borderColor="#16a34a"
+              />
+
+              <DashboardCard
+                title=" Lost Leads"
+                value={stats.lostLeads}
+                borderColor="#dc2626"
+              />
+
+              <DashboardCard
+                title=" Total Deal Value"
+                value={`$${stats.totalDealValue}`}
+                borderColor="#f59e0b"
+              />
+
+              <DashboardCard
+                title=" Won Deal Value"
+                value={`$${stats.totalWonDealValue}`}
+                borderColor="#10b981"
+              />
+            </div>
+
+            {/* LEADS TABLE */}
+            <LeadsTable />
+          </>
+        )}
+      </div>
     </div>
   );
 }
 
-function DashboardCard({ title, value }) {
+function DashboardCard({
+  title,
+  value,
+  borderColor,
+}) {
   return (
     <div
       style={{
         backgroundColor: "white",
-        padding: "25px",
-        borderRadius: "14px",
+        padding: "28px",
+        borderRadius: "20px",
         boxShadow:
-          "0 4px 10px rgba(0,0,0,0.05)",
+          "0 6px 18px rgba(0,0,0,0.06)",
+        borderTop: `5px solid ${borderColor}`,
+        transition: "0.2s ease",
       }}
     >
       <h3
         style={{
-          marginBottom: "10px",
+          marginBottom: "18px",
           color: "#64748b",
+          fontSize: "18px",
+          fontWeight: "600",
         }}
       >
         {title}
@@ -165,6 +218,8 @@ function DashboardCard({ title, value }) {
         style={{
           margin: 0,
           color: "#0f172a",
+          fontSize: "42px",
+          fontWeight: "700",
         }}
       >
         {value}

@@ -5,26 +5,43 @@ import LeadNotes from "./LeadNotes";
 
 function LeadsTable() {
   const [leads, setLeads] = useState([]);
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [message, setMessage] = useState("");
-
+  const [search, setSearch] =
+    useState("");
+  const [status, setStatus] =
+    useState("");
+  const [source, setSource] =
+    useState("");
+  const [salesperson, setSalesperson] =
+    useState("");
+  const [message, setMessage] =
+    useState("");
   const [selectedLead, setSelectedLead] =
     useState(null);
-
   const [editingLead, setEditingLead] =
     useState(null);
 
+  const [deleteLeadId, setDeleteLeadId] =
+    useState(null);
+
+  const [showDeleteModal, setShowDeleteModal] =
+    useState(false);
+
   useEffect(() => {
     fetchLeads();
-  }, [search, status]);
+  }, [
+    search,
+    status,
+    source,
+    salesperson,
+  ]);
 
   const fetchLeads = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
       const response = await API.get(
-        `/leads?search=${search}&status=${status}`,
+        `/leads?search=${search}&status=${status}&leadSource=${source}&assignedSalesperson=${salesperson}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,29 +55,29 @@ function LeadsTable() {
     }
   };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this lead?"
-    );
-
-    if (!confirmDelete) {
-      return;
-    }
-
+  const handleDelete = async () => {
     try {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
-      await API.delete(`/leads/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await API.delete(
+        `/leads/${deleteLeadId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      setMessage("Lead deleted successfully");
+      setMessage(
+        "Lead deleted successfully"
+      );
 
       setTimeout(() => {
         setMessage("");
       }, 3000);
+
+      setShowDeleteModal(false);
 
       fetchLeads();
     } catch (error) {
@@ -79,7 +96,8 @@ function LeadsTable() {
     newStatus
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token =
+        localStorage.getItem("token");
 
       await API.put(
         `/leads/${id}`,
@@ -100,14 +118,18 @@ function LeadsTable() {
   };
 
   return (
-    <div style={{ marginTop: "40px" }}>
+    <div
+      style={{
+        marginTop: "40px",
+      }}
+    >
       <div
         style={{
           backgroundColor: "white",
-          padding: "25px",
-          borderRadius: "14px",
+          padding: "35px",
+          borderRadius: "22px",
           boxShadow:
-            "0 4px 10px rgba(0,0,0,0.05)",
+            "0 6px 18px rgba(0,0,0,0.05)",
         }}
       >
         <CreateLeadForm
@@ -119,19 +141,39 @@ function LeadsTable() {
         style={{
           marginTop: "40px",
           backgroundColor: "white",
-          padding: "25px",
-          borderRadius: "14px",
+          padding: "35px",
+          borderRadius: "22px",
           boxShadow:
-            "0 4px 10px rgba(0,0,0,0.05)",
+            "0 6px 18px rgba(0,0,0,0.05)",
         }}
       >
-        <h2
+        <div
           style={{
-            marginBottom: "20px",
+            marginBottom: "30px",
           }}
         >
-          Leads Management
-        </h2>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: "32px",
+              color: "#0f172a",
+              fontWeight: "700",
+            }}
+          >
+            Leads Management
+          </h2>
+
+          <p
+            style={{
+              marginTop: "10px",
+              color: "#64748b",
+              fontSize: "15px",
+            }}
+          >
+            Search, filter, and manage
+            all leads
+          </p>
+        </div>
 
         {message && (
           <div
@@ -143,10 +185,10 @@ function LeadsTable() {
                   ? "#16a34a"
                   : "#ef4444",
               color: "white",
-              padding: "12px",
-              borderRadius: "8px",
-              marginBottom: "20px",
-              fontWeight: "bold",
+              padding: "14px",
+              borderRadius: "10px",
+              marginBottom: "25px",
+              fontWeight: "600",
             }}
           >
             {message}
@@ -156,8 +198,10 @@ function LeadsTable() {
         <div
           style={{
             display: "flex",
-            gap: "10px",
-            marginBottom: "20px",
+            gap: "16px",
+            marginBottom: "30px",
+            flexWrap: "wrap",
+            alignItems: "center",
           }}
         >
           <input
@@ -168,10 +212,15 @@ function LeadsTable() {
               setSearch(e.target.value)
             }
             style={{
-              padding: "12px",
-              width: "300px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
+              padding: "14px 18px",
+              width: "280px",
+              borderRadius: "12px",
+              border:
+                "1px solid #dbeafe",
+              backgroundColor:
+                "#f8fafc",
+              fontSize: "15px",
+              outline: "none",
             }}
           />
 
@@ -180,15 +229,15 @@ function LeadsTable() {
             onChange={(e) =>
               setStatus(e.target.value)
             }
-            style={{
-              padding: "12px",
-              borderRadius: "8px",
-              border: "1px solid #ccc",
-            }}
+            style={filterStyle}
           >
-            <option value="">All Status</option>
+            <option value="">
+              All Status
+            </option>
 
-            <option value="New">New</option>
+            <option value="New">
+              New
+            </option>
 
             <option value="Contacted">
               Contacted
@@ -202,9 +251,71 @@ function LeadsTable() {
               Proposal Sent
             </option>
 
-            <option value="Won">Won</option>
+            <option value="Won">
+              Won
+            </option>
 
-            <option value="Lost">Lost</option>
+            <option value="Lost">
+              Lost
+            </option>
+          </select>
+
+          <select
+            value={source}
+            onChange={(e) =>
+              setSource(e.target.value)
+            }
+            style={filterStyle}
+          >
+            <option value="">
+              All Sources
+            </option>
+
+            <option value="Website">
+              Website
+            </option>
+
+            <option value="Facebook">
+              Facebook
+            </option>
+
+            <option value="LinkedIn">
+              LinkedIn
+            </option>
+
+            <option value="Referral">
+              Referral
+            </option>
+          </select>
+
+          <select
+            value={salesperson}
+            onChange={(e) =>
+              setSalesperson(
+                e.target.value
+              )
+            }
+            style={filterStyle}
+          >
+            <option value="">
+              All Salespersons
+            </option>
+
+            <option value="John">
+              John
+            </option>
+
+            <option value="David">
+              David
+            </option>
+
+            <option value="Sarah">
+              Sarah
+            </option>
+
+            <option value="Michael">
+              Michael
+            </option>
           </select>
         </div>
 
@@ -216,13 +327,16 @@ function LeadsTable() {
           <table
             width="100%"
             style={{
-              borderCollapse: "collapse",
+              borderCollapse:
+                "separate",
+              borderSpacing: "0 12px",
             }}
           >
             <thead>
               <tr
                 style={{
-                  backgroundColor: "#f1f5f9",
+                  backgroundColor:
+                    "#f8fafc",
                 }}
               >
                 <th style={tableHeader}>
@@ -257,7 +371,9 @@ function LeadsTable() {
 
             <tbody>
               {leads.map((lead) => (
-                <tr key={lead._id}>
+                <tr
+                  key={lead._id}
+                >
                   <td style={tableCell}>
                     {lead.leadName}
                   </td>
@@ -285,10 +401,7 @@ function LeadsTable() {
                           e.target.value
                         )
                       }
-                      style={{
-                        padding: "8px",
-                        borderRadius: "6px",
-                      }}
+                      style={filterStyle}
                     >
                       <option value="New">
                         New
@@ -318,7 +431,9 @@ function LeadsTable() {
 
                   <td style={tableCell}>
                     $
-                    {lead.estimatedDealValue}
+                    {
+                      lead.estimatedDealValue
+                    }
                   </td>
 
                   <td style={tableCell}>
@@ -355,11 +470,15 @@ function LeadsTable() {
                       </button>
 
                       <button
-                        onClick={() =>
-                          handleDelete(
+                        onClick={() => {
+                          setDeleteLeadId(
                             lead._id
-                          )
-                        }
+                          );
+
+                          setShowDeleteModal(
+                            true
+                          );
+                        }}
                         style={
                           deleteButtonStyle
                         }
@@ -387,7 +506,9 @@ function LeadsTable() {
 
             <p>
               <strong>Company:</strong>{" "}
-              {selectedLead.companyName}
+              {
+                selectedLead.companyName
+              }
             </p>
 
             <p>
@@ -401,12 +522,18 @@ function LeadsTable() {
             </p>
 
             <p>
-              <strong>Lead Source:</strong>{" "}
-              {selectedLead.leadSource}
+              <strong>
+                Lead Source:
+              </strong>{" "}
+              {
+                selectedLead.leadSource
+              }
             </p>
 
             <p>
-              <strong>Salesperson:</strong>{" "}
+              <strong>
+                Salesperson:
+              </strong>{" "}
               {
                 selectedLead.assignedSalesperson
               }
@@ -418,7 +545,9 @@ function LeadsTable() {
             </p>
 
             <p>
-              <strong>Deal Value:</strong>{" "}
+              <strong>
+                Deal Value:
+              </strong>{" "}
               $
               {
                 selectedLead.estimatedDealValue
@@ -451,6 +580,64 @@ function LeadsTable() {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div style={modalOverlay}>
+          <div style={deleteModalStyle}>
+            <h2
+              style={{
+                marginTop: 0,
+                color: "#0f172a",
+              }}
+            >
+              Delete Lead
+            </h2>
+
+            <p
+              style={{
+                color: "#64748b",
+                lineHeight: "1.7",
+              }}
+            >
+              Are you sure you want to
+              delete this lead?
+              This action cannot be undone.
+            </p>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "flex-end",
+                gap: "12px",
+                marginTop: "30px",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setShowDeleteModal(
+                    false
+                  )
+                }
+                style={
+                  cancelButtonStyle
+                }
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleDelete}
+                style={
+                  deleteButtonStyle
+                }
+              >
+                Delete Lead
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -490,7 +677,8 @@ function EditLeadModal({
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]:
+        e.target.value,
     });
   };
 
@@ -525,7 +713,7 @@ function EditLeadModal({
         <div
           style={{
             display: "grid",
-            gap: "10px",
+            gap: "14px",
           }}
         >
           <input
@@ -563,14 +751,30 @@ function EditLeadModal({
             style={modalInput}
           />
 
-          <input
+          <select
             name="assignedSalesperson"
             value={
               formData.assignedSalesperson
             }
             onChange={handleChange}
             style={modalInput}
-          />
+          >
+            <option value="John">
+              John
+            </option>
+
+            <option value="David">
+              David
+            </option>
+
+            <option value="Sarah">
+              Sarah
+            </option>
+
+            <option value="Michael">
+              Michael
+            </option>
+          </select>
 
           <select
             name="status"
@@ -578,7 +782,9 @@ function EditLeadModal({
             onChange={handleChange}
             style={modalInput}
           >
-            <option value="New">New</option>
+            <option value="New">
+              New
+            </option>
 
             <option value="Contacted">
               Contacted
@@ -592,9 +798,13 @@ function EditLeadModal({
               Proposal Sent
             </option>
 
-            <option value="Won">Won</option>
+            <option value="Won">
+              Won
+            </option>
 
-            <option value="Lost">Lost</option>
+            <option value="Lost">
+              Lost
+            </option>
           </select>
 
           <input
@@ -625,15 +835,32 @@ function EditLeadModal({
   );
 }
 
+const filterStyle = {
+  padding: "14px 18px",
+  borderRadius: "12px",
+  border: "1px solid #dbeafe",
+  backgroundColor: "#f8fafc",
+  fontSize: "15px",
+  minWidth: "170px",
+  outline: "none",
+};
+
 const tableHeader = {
-  padding: "14px",
+  padding: "18px",
   textAlign: "left",
+  color: "#64748b",
+  fontSize: "15px",
+  fontWeight: "600",
 };
 
 const tableCell = {
-  padding: "14px",
+  padding: "20px 18px",
+  backgroundColor: "white",
+  borderTop: "1px solid #f1f5f9",
   borderBottom:
-    "1px solid #e2e8f0",
+    "1px solid #f1f5f9",
+  fontSize: "15px",
+  color: "#0f172a",
 };
 
 const modalOverlay = {
@@ -643,62 +870,95 @@ const modalOverlay = {
   width: "100%",
   height: "100%",
   backgroundColor:
-    "rgba(0,0,0,0.5)",
+    "rgba(15,23,42,0.55)",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  zIndex: 1000,
 };
 
 const modalStyle = {
   backgroundColor: "white",
-  padding: "30px",
-  borderRadius: "12px",
-  width: "450px",
+  padding: "35px",
+  borderRadius: "22px",
+  width: "500px",
   maxHeight: "90vh",
   overflowY: "auto",
+  boxShadow:
+    "0 10px 30px rgba(0,0,0,0.15)",
+};
+
+const deleteModalStyle = {
+  backgroundColor: "white",
+  width: "420px",
+  padding: "30px",
+  borderRadius: "20px",
+  boxShadow:
+    "0 10px 30px rgba(0,0,0,0.12)",
 };
 
 const modalInput = {
-  padding: "12px",
-  borderRadius: "8px",
-  border: "1px solid #ccc",
+  padding: "14px",
+  borderRadius: "12px",
+  border: "1px solid #dbeafe",
+  backgroundColor: "#f8fafc",
+  fontSize: "15px",
+  outline: "none",
 };
 
 const viewButtonStyle = {
   backgroundColor: "#2563eb",
   color: "white",
   border: "none",
-  padding: "8px 12px",
-  borderRadius: "8px",
+  padding: "10px 16px",
+  borderRadius: "10px",
   cursor: "pointer",
+  fontWeight: "600",
+  fontSize: "14px",
 };
 
 const editButtonStyle = {
   backgroundColor: "#16a34a",
   color: "white",
   border: "none",
-  padding: "8px 12px",
-  borderRadius: "8px",
+  padding: "10px 16px",
+  borderRadius: "10px",
   cursor: "pointer",
+  fontWeight: "600",
+  fontSize: "14px",
 };
 
 const deleteButtonStyle = {
-  backgroundColor: "#dc2626",
+  backgroundColor: "#ef4444",
   color: "white",
   border: "none",
-  padding: "8px 12px",
-  borderRadius: "8px",
+  padding: "10px 16px",
+  borderRadius: "10px",
   cursor: "pointer",
+  fontWeight: "600",
+  fontSize: "14px",
+};
+
+const cancelButtonStyle = {
+  backgroundColor: "#e2e8f0",
+  color: "#0f172a",
+  border: "none",
+  padding: "12px 18px",
+  borderRadius: "10px",
+  cursor: "pointer",
+  fontWeight: "600",
 };
 
 const closeButtonStyle = {
   backgroundColor: "#64748b",
   color: "white",
   border: "none",
-  padding: "10px",
-  borderRadius: "8px",
+  padding: "12px 18px",
+  borderRadius: "10px",
   cursor: "pointer",
-  marginTop: "15px",
+  marginTop: "18px",
+  fontWeight: "600",
+  fontSize: "14px",
 };
 
 export default LeadsTable;

@@ -1,8 +1,13 @@
 const Lead = require("../models/Lead");
 
-const createLead = async (req, res) => {
+const createLead = async (
+  req,
+  res
+) => {
   try {
-    const lead = await Lead.create(req.body);
+    const lead = await Lead.create(
+      req.body
+    );
 
     res.status(201).json(lead);
   } catch (error) {
@@ -12,14 +17,21 @@ const createLead = async (req, res) => {
   }
 };
 
-const getLeads = async (req, res) => {
+const getLeads = async (
+  req,
+  res
+) => {
   try {
-    const search = req.query.search || "";
-
-    const status = req.query.status || "";
+    const {
+      search,
+      status,
+      leadSource,
+      assignedSalesperson,
+    } = req.query;
 
     let query = {};
 
+    // SEARCH FILTER
     if (search) {
       query.$or = [
         {
@@ -34,14 +46,35 @@ const getLeads = async (req, res) => {
             $options: "i",
           },
         },
+        {
+          email: {
+            $regex: search,
+            $options: "i",
+          },
+        },
       ];
     }
 
+    // STATUS FILTER
     if (status) {
       query.status = status;
     }
 
-    const leads = await Lead.find(query).sort({
+    // LEAD SOURCE FILTER
+    if (leadSource) {
+      query.leadSource =
+        leadSource;
+    }
+
+    // SALESPERSON FILTER
+    if (assignedSalesperson) {
+      query.assignedSalesperson =
+        assignedSalesperson;
+    }
+
+    const leads = await Lead.find(
+      query
+    ).sort({
       createdAt: -1,
     });
 
@@ -53,9 +86,15 @@ const getLeads = async (req, res) => {
   }
 };
 
-const getLeadById = async (req, res) => {
+const getLeadById = async (
+  req,
+  res
+) => {
   try {
-    const lead = await Lead.findById(req.params.id);
+    const lead =
+      await Lead.findById(
+        req.params.id
+      );
 
     if (!lead) {
       return res.status(404).json({
@@ -71,15 +110,19 @@ const getLeadById = async (req, res) => {
   }
 };
 
-const updateLead = async (req, res) => {
+const updateLead = async (
+  req,
+  res
+) => {
   try {
-    const updatedLead = await Lead.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-      }
-    );
+    const updatedLead =
+      await Lead.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {
+          new: true,
+        }
+      );
 
     if (!updatedLead) {
       return res.status(404).json({
@@ -95,9 +138,15 @@ const updateLead = async (req, res) => {
   }
 };
 
-const deleteLead = async (req, res) => {
+const deleteLead = async (
+  req,
+  res
+) => {
   try {
-    const deletedLead = await Lead.findByIdAndDelete(req.params.id);
+    const deletedLead =
+      await Lead.findByIdAndDelete(
+        req.params.id
+      );
 
     if (!deletedLead) {
       return res.status(404).json({

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
+
 import API from "../services/api";
 import LeadsTable from "../components/LeadsTable";
 
@@ -38,7 +40,9 @@ function DashboardPage() {
   return (
     <div
       style={{
-        padding: "20px",
+        minHeight: "100vh",
+        backgroundColor: "#f5f7fb",
+        padding: "30px",
         fontFamily: "Arial",
       }}
     >
@@ -47,15 +51,38 @@ function DashboardPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginBottom: "30px",
         }}
       >
-        <h1>CRM Dashboard</h1>
+        <div>
+          <h1
+            style={{
+              margin: 0,
+              color: "#1e293b",
+            }}
+          >
+            CRM Dashboard
+          </h1>
+
+          <p
+            style={{
+              color: "#64748b",
+            }}
+          >
+            Lead Management System
+          </p>
+        </div>
 
         <button
           onClick={handleLogout}
           style={{
-            padding: "10px 20px",
+            padding: "12px 20px",
+            border: "none",
+            backgroundColor: "#ef4444",
+            color: "white",
+            borderRadius: "8px",
             cursor: "pointer",
+            fontWeight: "bold",
           }}
         >
           Logout
@@ -69,54 +96,81 @@ function DashboardPage() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
+              gridTemplateColumns:
+                "repeat(auto-fit, minmax(220px, 1fr))",
               gap: "20px",
-              marginTop: "30px",
             }}
           >
-            <div style={cardStyle}>
-              <h2>Total Leads</h2>
-              <p>{stats.totalLeads}</p>
-            </div>
+            <DashboardCard
+              title="Total Leads"
+              value={stats.totalLeads}
+            />
 
-            <div style={cardStyle}>
-              <h2>New Leads</h2>
-              <p>{stats.newLeads}</p>
-            </div>
+            <DashboardCard
+              title="New Leads"
+              value={stats.newLeads}
+            />
 
-            <div style={cardStyle}>
-              <h2>Qualified Leads</h2>
-              <p>{stats.qualifiedLeads}</p>
-            </div>
+            <DashboardCard
+              title="Qualified Leads"
+              value={stats.qualifiedLeads}
+            />
 
-            <div style={cardStyle}>
-              <h2>Won Leads</h2>
-              <p>{stats.wonLeads}</p>
-            </div>
+            <DashboardCard
+              title="Won Leads"
+              value={stats.wonLeads}
+            />
 
-            <div style={cardStyle}>
-              <h2>Lost Leads</h2>
-              <p>{stats.lostLeads}</p>
-            </div>
+            <DashboardCard
+              title="Lost Leads"
+              value={stats.lostLeads}
+            />
 
-            <div style={cardStyle}>
-              <h2>Total Deal Value</h2>
-              <p>${stats.totalDealValue}</p>
-            </div>
+            <DashboardCard
+              title="Total Deal Value"
+              value={`$${stats.totalDealValue}`}
+            />
           </div>
 
           <LeadsTable />
         </>
       )}
+
+
     </div>
   );
 }
 
-const cardStyle = {
-  backgroundColor: "#f4f4f4",
-  padding: "20px",
-  borderRadius: "10px",
-  boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-};
+function DashboardCard({ title, value }) {
+  return (
+    <div
+      style={{
+        backgroundColor: "white",
+        padding: "25px",
+        borderRadius: "14px",
+        boxShadow:
+          "0 4px 10px rgba(0,0,0,0.05)",
+      }}
+    >
+      <h3
+        style={{
+          marginBottom: "10px",
+          color: "#64748b",
+        }}
+      >
+        {title}
+      </h3>
+
+      <h1
+        style={{
+          margin: 0,
+          color: "#0f172a",
+        }}
+      >
+        {value}
+      </h1>
+    </div>
+  );
+}
 
 export default DashboardPage;
